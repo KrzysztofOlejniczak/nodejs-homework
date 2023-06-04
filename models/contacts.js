@@ -10,6 +10,10 @@ const readContacts = async () => {
     .then((data) => JSON.parse(data));
 };
 
+const writeContacts = async (data) => {
+  await fs.writeFile(contactsPath, JSON.stringify(data));
+};
+
 const listContacts = async () => {
   return await readContacts();
 };
@@ -24,7 +28,7 @@ const removeContact = async (contactId) => {
   const newContacts = contacts.filter((contact) => contact.id !== contactId);
 
   if (contacts.length > newContacts.length) {
-    await fs.writeFile(contactsPath, JSON.stringify(newContacts));
+    await writeContacts(newContacts);
     return true;
   }
   return false;
@@ -34,7 +38,7 @@ const addContact = async (body) => {
   const { name, email, phone } = body;
   const newContact = { id: nanoid(), name, email, phone };
   const contacts = await readContacts();
-  await fs.writeFile(contactsPath, JSON.stringify([...contacts, newContact]));
+  await writeContacts([...contacts, newContact]);
   return newContact;
 };
 
@@ -45,7 +49,7 @@ const updateContact = async (contactId, body) => {
   );
   if (indexToUpdate >= 0) {
     contacts[indexToUpdate] = { ...contacts[indexToUpdate], ...body };
-    await fs.writeFile(contactsPath, JSON.stringify(contacts));
+    await writeContacts(contacts);
     return contacts[indexToUpdate];
   }
   return false;
