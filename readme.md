@@ -2,7 +2,7 @@
 
 ## Getting Started
 
-1. **Clone the repository:**
+1. **Clone the repository**
 
 2. **Install the dependencies:**
 
@@ -22,12 +22,10 @@
 
 4. **Use one of the commands:**
 
-```
 - `npm start` &mdash; start server in production mode
 - `npm run start:dev` &mdash; start server in dev mode (development)
 - `npm run lint` &mdash; checking code with ESlint
 - `npm lint:fix` &mdash; checking code and autofix
-```
 
 The API server will start running on http://localhost:3000.
 
