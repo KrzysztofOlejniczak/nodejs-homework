@@ -1,31 +1,46 @@
 ## GoIT Node.js Course Template Homework
 
-Виконайте форк цього репозиторію для виконання домашніх завдань (2-6)
-Форк створить репозиторій на вашому http://github.com
+## Getting Started
 
-Додайте ментора до колаборації
+1. **Clone the repository:**
 
-Для кожної домашньої роботи створюйте свою гілку.
+2. **Install the dependencies:**
 
-- hw02
-- hw03
-- hw04
-- hw05
-- hw06
+   ```
+   npm install
+   ```
 
-Кожна нова гілка для др повинна робитися з master
+3. **Set up the environment variables:**
 
-Після того, як ви закінчили виконувати домашнє завдання у своїй гілці, необхідно зробити пулл-реквест (PR). Потім додати ментора для рев'ю коду. Тільки після того, як ментор заапрувить PR, ви можете виконати мердж гілки з домашнім завданням у майстер.
+   Create a .env file in the root directory.
+   Add the following variables to the .env file:
 
-Уважно читайте коментарі ментора. Виправте зауваження та зробіть коміт у гілці з домашнім завданням. Зміни підтягнуться у PR автоматично після того, як ви відправите коміт з виправленнями на github
-Після виправлення знову додайте ментора на рев'ю коду.
+   ```
+   DB_HOST = 'mongodb+srv://<username>:<pswd>@cluster0.mw1yxix.mongodb.net/db-contacts?retryWrites=true&w=majority'
 
-- При здачі домашньої роботи є посилання на PR
-- JS-код чистий та зрозумілий, для форматування використовується Prettier
+   ```
 
-### Команди:
+4. **Use one of the commands:**
 
-- `npm start` &mdash; старт сервера в режимі production
-- `npm run start:dev` &mdash; старт сервера в режимі розробки (development)
-- `npm run lint` &mdash; запустити виконання перевірки коду з eslint, необхідно виконувати перед кожним PR та виправляти всі помилки лінтера
-- `npm lint:fix` &mdash; та ж перевірка лінтера, але з автоматичними виправленнями простих помилок
+```
+- `npm start` &mdash; start server in production mode
+- `npm run start:dev` &mdash; start server in dev mode (development)
+- `npm run lint` &mdash; checking code with ESlint
+- `npm lint:fix` &mdash; checking code and autofix
+```
+
+The API server will start running on http://localhost:3000.
+
+## API Endpoints
+
+### GET /contacts : Get all contacts.
+
+### GET /contacts/:contactId : Get a contact by ID.
+
+### POST /contacts : Create a new contact.
+
+### PUT /contacts/:contactId : Update a contact by ID.
+
+### PATCH /contacts/:contactId/favorite : Update favorite status by contact ID.
+
+### DELETE /contacts/:contactId : Delete a contact by ID.
