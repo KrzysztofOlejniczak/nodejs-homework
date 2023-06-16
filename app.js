@@ -18,7 +18,7 @@ app.use("/api", contactsRouter);
 
 app.use((_, res, __) => {
   res.status(404).json({
-    message: "Use api on routes: /api/contacts",
+    message: "Use api on routes: /api/contacts or /api/users",
   });
 });
 
