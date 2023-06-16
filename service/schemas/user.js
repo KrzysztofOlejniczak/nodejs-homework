@@ -24,6 +24,10 @@ const userSchema = new Schema({
   },
 });
 
+userSchema.methods.setSubscription = function (subscription) {
+  this.subscription = subscription;
+};
+
 userSchema.methods.setToken = function (token) {
   this.token = token;
 };

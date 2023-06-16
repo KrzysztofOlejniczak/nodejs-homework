@@ -9,6 +9,10 @@ const validationUserSchema = Joi.object({
   password: Joi.string().min(5).required(),
 });
 
+const validationUserSubscription = Joi.object({
+  subscription: Joi.string().valid("starter", "pro", "business").required(),
+});
+
 const signup = async (req, res, next) => {
   const { email, password } = req.body;
   try {
@@ -122,13 +126,60 @@ const logout = async (req, res, next) => {
   return res.status(204).send();
 };
 
-const list = () => {
-  console.log("list");
+const getCurrent = async (req, res, next) => {
+  try {
+    const user = req.user;
+    res.json({
+      status: "success",
+      code: 200,
+      data: {
+        user: {
+          email: user.email,
+          subscription: user.subscription,
+        },
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const setSubscription = async (req, res, next) => {
+  try {
+    const { error } = validationUserSubscription.validate(req.body);
+    if (error) {
+      return res.status(400).json({
+        status: "Bad request",
+        code: 400,
+        message: error.message,
+        data: "Bad request",
+      });
+    } else {
+      const { subscription } = req.body;
+      const user = req.user;
+      user.setSubscription(subscription);
+      await user.save();
+
+      res.json({
+        status: "success",
+        code: 200,
+        data: {
+          user: {
+            email: user.email,
+            subscription: user.subscription,
+          },
+        },
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
 };
 
 module.exports = {
   signup,
   login,
   logout,
-  list,
+  getCurrent,
+  setSubscription,
 };

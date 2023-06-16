@@ -2,22 +2,7 @@ const express = require("express");
 const router = express.Router();
 const ctrlContact = require("../controller/contacts");
 const ctrlUsers = require("../controller/users");
-const passport = require("passport");
-
-const auth = (req, res, next) => {
-  passport.authenticate("jwt", { session: false }, (err, user) => {
-    if (!user || err) {
-      return res.status(401).json({
-        status: "error",
-        code: 401,
-        message: "Unauthorized",
-        data: "Unauthorized",
-      });
-    }
-    req.user = user;
-    next();
-  })(req, res, next);
-};
+const auth = require("../middleware/auth");
 
 router.get("/contacts", auth, ctrlContact.get);
 
@@ -37,6 +22,8 @@ router.post("/users/login", ctrlUsers.login);
 
 router.post("/users/logout", auth, ctrlUsers.logout);
 
-router.get("/users/current", auth, ctrlUsers.list);
+router.get("/users/current", auth, ctrlUsers.getCurrent);
+
+router.patch("/users/", auth, ctrlUsers.setSubscription);
 
 module.exports = router;

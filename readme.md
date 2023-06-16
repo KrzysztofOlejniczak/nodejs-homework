@@ -16,7 +16,8 @@
    Add the following variables to the .env file:
 
    ```
-   DB_HOST = 'mongodb+srv://<username>:<pswd>@cluster0.mw1yxix.mongodb.net/db-contacts?retryWrites=true&w=majority'
+   DB_HOST = Your mongodb+srv uri
+   SECRET = Your secret string to sign jwt
 
    ```
 
@@ -33,6 +34,8 @@ The API server will start running on http://localhost:3000.
 
 ### GET /contacts : Get all contacts.
 
+### GET /contacts?favorite=true&page=1&limit=20 : Get all contacts with favorite filter and pagination.
+
 ### GET /contacts/:contactId : Get a contact by ID.
 
 ### POST /contacts : Create a new contact.
@@ -42,3 +45,13 @@ The API server will start running on http://localhost:3000.
 ### PATCH /contacts/:contactId/favorite : Update favorite status by contact ID.
 
 ### DELETE /contacts/:contactId : Delete a contact by ID.
+
+### POST /users/signup : Register new user.
+
+### POST /users/login : Login user.
+
+### POST /users/logout : Logout user.
+
+### GET /users/current : Get current user data.
+
+### PATCH /users/ : Change users subscription.

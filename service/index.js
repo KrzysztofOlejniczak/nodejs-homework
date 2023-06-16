@@ -1,17 +1,17 @@
 const Contact = require("./schemas/contacts");
 
-const getAllContacts = async (owner, favorite) => {
+const getAllContacts = async (owner, favorite, page, limit) => {
+  const skip = (page - 1) * limit;
+
   if (favorite && favorite.toLowerCase() === "true") {
-    console.log("fav");
-    return Contact.find({ owner, favorite: true });
+    return Contact.find({ owner, favorite: true }).skip(skip).limit(limit);
   }
 
   if (favorite && favorite.toLowerCase() === "false") {
-    console.log("fav");
-    return Contact.find({ owner, favorite: false });
+    return Contact.find({ owner, favorite: false }).skip(skip).limit(limit);
   }
 
-  return Contact.find({ owner });
+  return Contact.find({ owner }).skip(skip).limit(limit);
 };
 
 const getContactById = (id, owner) => {

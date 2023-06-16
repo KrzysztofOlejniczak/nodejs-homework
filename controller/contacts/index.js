@@ -19,9 +19,14 @@ const updateStatusSchema = Joi.object({
 
 const get = async (req, res, next) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+
     const results = await service.getAllContacts(
       req.user._id,
-      req.query.favorite
+      req.query.favorite,
+      page,
+      limit
     );
     res.status(200).json({
       status: "success",
