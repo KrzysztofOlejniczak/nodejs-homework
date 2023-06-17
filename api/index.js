@@ -30,7 +30,7 @@ router.patch("/users/", auth, ctrlUsers.setSubscription);
 router.patch(
   "/users/avatars",
   auth,
-  upload.single("picture"),
+  upload.single("avatar"),
   ctrlUsers.setAvatar
 );
 
