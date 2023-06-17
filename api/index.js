@@ -3,6 +3,7 @@ const router = express.Router();
 const ctrlContact = require("../controller/contacts");
 const ctrlUsers = require("../controller/users");
 const auth = require("../middleware/auth");
+const upload = require("../middleware/avatarUploader");
 
 router.get("/contacts", auth, ctrlContact.get);
 
@@ -25,5 +26,12 @@ router.post("/users/logout", auth, ctrlUsers.logout);
 router.get("/users/current", auth, ctrlUsers.getCurrent);
 
 router.patch("/users/", auth, ctrlUsers.setSubscription);
+
+router.patch(
+  "/users/avatars",
+  auth,
+  upload.single("picture"),
+  ctrlUsers.setAvatar
+);
 
 module.exports = router;
