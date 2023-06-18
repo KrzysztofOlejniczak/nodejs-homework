@@ -1,16 +1,38 @@
 const request = require("supertest");
-const app = "http://localhost:3000";
+const User = require("../service/schemas/user");
+const mongoose = require("mongoose");
+require("dotenv").config();
 
+const uriDb = process.env.DB_HOST;
+
+const app = "http://localhost:3000";
 const user = {
   email: `test${Math.random(1000)}@example.com`,
   password: "Test1234!",
 };
 
 describe("Signup & Login Controller", () => {
-  it("SIGNUP>> should return a successful response with status code 201", async () => {
+  beforeAll(() => console.log(`User for testing: ${user.email}`));
+
+  afterAll(async () => {
+    const db = mongoose.connect(uriDb, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    await User.deleteOne({ email: user.email });
+    console.log(`Tested user (${user.email}) deleted.`);
+    (await db).disconnect();
+  });
+
+  it("SIGNUP>> should return a successful response with status code 201 and user object with email and subscription fields", async () => {
     const response = await request(app).post("/api/users/signup").send(user);
 
     expect(response.statusCode).toBe(201);
+    expect(response.body.data.user).toBeDefined();
+    expect(response.body.data.user.email).toBeDefined();
+    expect(typeof response.body.data.user.email).toBe("string");
+    expect(response.body.data.user.subscription).toBeDefined();
+    expect(typeof response.body.data.user.subscription).toBe("string");
   });
 
   it("LOGIN>> should return a successful response with status code 200", async () => {
@@ -27,8 +49,6 @@ describe("Signup & Login Controller", () => {
 
   it("LOGIN>> should return a user object with email and subscription fields", async () => {
     const response = await request(app).post("/api/users/login").send(user);
-
-    console.log(response.body.data.user);
 
     expect(response.body.data.user).toBeDefined();
     expect(response.body.data.user.email).toBeDefined();
