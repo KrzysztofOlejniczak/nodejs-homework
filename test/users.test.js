@@ -5,23 +5,26 @@ require("dotenv").config();
 
 const uriDb = process.env.DB_HOST;
 
-const app = "http://localhost:3000";
+// const app = "http://localhost:3000";
+const app = require("../app");
 const user = {
   email: `test${Math.random(1000)}@example.com`,
   password: "Test1234!",
 };
 
 describe("Signup & Login Controller", () => {
-  beforeAll(() => console.log(`User for testing: ${user.email}`));
-
-  afterAll(async () => {
-    const db = mongoose.connect(uriDb, {
+  beforeAll(async () => {
+    mongoose.connect(uriDb, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
+    console.log(`User for testing: ${user.email}`);
+  });
+
+  afterAll(async () => {
     await User.deleteOne({ email: user.email });
     console.log(`Tested user (${user.email}) deleted.`);
-    (await db).disconnect();
+    await mongoose.disconnect();
   });
 
   it("SIGNUP>> should return a successful response with status code 201 and user object with email and subscription fields", async () => {
