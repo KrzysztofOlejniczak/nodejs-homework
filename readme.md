@@ -55,3 +55,5 @@ The API server will start running on http://localhost:3000.
 ### GET /users/current : Get current user data.
 
 ### PATCH /users/ : Change users subscription.
+
+### PATCH /users/avatars : Change users avatar > upload file with _avatar_ key.

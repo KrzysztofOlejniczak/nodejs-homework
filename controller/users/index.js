@@ -3,6 +3,11 @@ const Joi = require("joi");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const secret = process.env.SECRET;
+const gravatar = require("gravatar");
+const path = require("path");
+const Jimp = require("jimp");
+const randomstring = require("randomstring");
+const fs = require("fs/promises");
 
 const validationUserSchema = Joi.object({
   email: Joi.string().email().required(),
@@ -15,6 +20,12 @@ const validationUserSubscription = Joi.object({
 
 const signup = async (req, res, next) => {
   const { email, password } = req.body;
+  const avatarURL = gravatar.url(
+    email,
+    { s: "200", r: "pg", d: "identicon" },
+    true
+  );
+
   try {
     const { error } = validationUserSchema.validate(req.body);
     if (error) {
@@ -35,7 +46,7 @@ const signup = async (req, res, next) => {
         });
       }
       try {
-        const newUser = new User({ email });
+        const newUser = new User({ email, avatarURL });
         newUser.setPassword(password);
         await newUser.save();
         res.status(201).json({
@@ -176,10 +187,64 @@ const setSubscription = async (req, res, next) => {
   }
 };
 
+const setAvatar = async (req, res, next) => {
+  try {
+    const { path: temporaryName } = req.file;
+    const ext = path.extname(temporaryName);
+    const avatarName = randomstring.generate() + ext;
+    const storeImage = path.join(
+      process.cwd(),
+      "public",
+      "avatars",
+      avatarName
+    );
+
+    try {
+      Jimp.read(temporaryName).then((avatar) => {
+        return avatar
+          .cover(
+            250,
+            250,
+            Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE
+          )
+          .quality(60)
+          .write(storeImage);
+      });
+    } catch (err) {
+      await fs.unlink(temporaryName);
+      next(err);
+    }
+    await fs.unlink(temporaryName);
+
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(401).json({
+        status: "Unauthorized",
+        code: 401,
+        message: "Not authorized",
+        data: "Bad request",
+      });
+    }
+
+    user.avatarURL = `/avatars/${avatarName}`;
+    await user.save();
+
+    res.status(200).json({
+      status: "success",
+      code: 200,
+      data: { avatarURL: user.avatarURL },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   signup,
   login,
   logout,
   getCurrent,
   setSubscription,
+  setAvatar,
 };
