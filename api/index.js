@@ -3,7 +3,7 @@ const router = express.Router();
 const ctrlContact = require("../controller/contacts");
 const ctrlUsers = require("../controller/users");
 const auth = require("../middleware/auth");
-const upload = require("../middleware/avatarUploader");
+const { avatarUploader } = require("../middleware/avatarUploader");
 
 router.get("/contacts", auth, ctrlContact.get);
 
@@ -30,7 +30,7 @@ router.patch("/users/", auth, ctrlUsers.setSubscription);
 router.patch(
   "/users/avatars",
   auth,
-  upload.single("avatar"),
+  avatarUploader.single("avatar"),
   ctrlUsers.setAvatar
 );
 
