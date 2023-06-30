@@ -18,6 +18,10 @@
    ```
    DB_HOST = Your mongodb+srv uri
    SECRET = Your secret string to sign jwt
+   SENDGRID_API_KEY = Your sendgrid API key
+   EMAIL_SENDER = Your verified in sendgrid sender email
+   BASE_URL = 'http://localhost'
+   PORT = '3000'
 
    ```
 
@@ -57,3 +61,7 @@ The API server will start running on http://localhost:3000.
 ### PATCH /users/ : Change users subscription.
 
 ### PATCH /users/avatars : Change users avatar > upload file with _avatar_ key.
+
+### GET /users/verify/:verificationToken : Verify user email by sended verification token
+
+### POST /users/verify : Resend verification email

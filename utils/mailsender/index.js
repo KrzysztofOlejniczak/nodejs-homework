@@ -19,7 +19,7 @@ const sendVerificationEmail = async (email, verificationToken) => {
     `${process.env.BASE_URL}:3000`;
 
   const emailOptions = {
-    from: "krzysztof.olejniczak+noreply@gmail.com",
+    from: process.env.EMAIL_SENDER,
     to: email,
     subject: "Verify your email address",
     text: `To verify your email go to: ${baseUrl}/api/users/verify/${verificationToken}`,
