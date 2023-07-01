@@ -34,4 +34,8 @@ router.patch(
   ctrlUsers.setAvatar
 );
 
+router.get("/users/verify/:verificationToken", ctrlUsers.verifyUser);
+
+router.post("/users/verify", ctrlUsers.resendVerificationEmail);
+
 module.exports = router;

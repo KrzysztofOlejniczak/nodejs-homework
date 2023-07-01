@@ -1,6 +1,7 @@
 const User = require("../../service/schemas/user");
 const Joi = require("joi");
 const jwt = require("jsonwebtoken");
+const nanoid = require("nanoid");
 require("dotenv").config();
 const secret = process.env.SECRET;
 const gravatar = require("gravatar");
@@ -8,10 +9,15 @@ const path = require("path");
 const Jimp = require("jimp");
 const randomstring = require("randomstring");
 const fs = require("fs/promises");
+const { sendVerificationEmail } = require("../../utils/mailsender");
 
 const validationUserSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(5).required(),
+});
+
+const validationEmail = Joi.object({
+  email: Joi.string().email().required(),
 });
 
 const validationUserSubscription = Joi.object({
@@ -20,6 +26,7 @@ const validationUserSubscription = Joi.object({
 
 const signup = async (req, res, next) => {
   const { email, password } = req.body;
+  const verificationToken = nanoid.nanoid(15);
   const avatarURL = gravatar.url(
     email,
     { s: "200", r: "pg", d: "identicon" },
@@ -46,9 +53,12 @@ const signup = async (req, res, next) => {
         });
       }
       try {
-        const newUser = new User({ email, avatarURL });
+        const newUser = new User({ email, avatarURL, verificationToken });
         newUser.setPassword(password);
         await newUser.save();
+
+        await sendVerificationEmail(email, verificationToken);
+
         res.status(201).json({
           status: "created",
           code: 201,
@@ -87,6 +97,15 @@ const login = async (req, res, next) => {
           status: "Unauthorized",
           code: 401,
           message: "Email or password is wrong",
+          data: "Bad request",
+        });
+      }
+
+      if (user.verify === false) {
+        return res.status(401).json({
+          status: "Unauthorized",
+          code: 401,
+          message: "User not verified",
           data: "Bad request",
         });
       }
@@ -240,6 +259,79 @@ const setAvatar = async (req, res, next) => {
   }
 };
 
+const verifyUser = async (req, res, next) => {
+  const { verificationToken } = req.params;
+  try {
+    const user = await User.findOne({ verificationToken });
+
+    if (!user) {
+      return res.status(404).json({
+        status: "Not found",
+        code: 404,
+        message: "User not found",
+        data: "Not found",
+      });
+    }
+
+    user.verificationToken = "null";
+    user.verify = true;
+    await user.save();
+
+    res.status(200).json({
+      status: "success",
+      code: 200,
+      message: "Verification successful",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const resendVerificationEmail = async (req, res, next) => {
+  const { email } = req.body;
+  try {
+    const { error } = validationEmail.validate(req.body);
+    if (error) {
+      return res.status(400).json({
+        status: "Bad request",
+        code: 400,
+        message: error.message,
+        data: "Bad request",
+      });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        status: "Not found",
+        code: 404,
+        message: "User not found",
+        data: "Not found",
+      });
+    }
+
+    if (user.verify === true) {
+      return res.status(400).json({
+        status: "Bad request",
+        code: 400,
+        message: "Verification has already been passed",
+        data: "Bad request",
+      });
+    }
+
+    await sendVerificationEmail(user.email, user.verificationToken);
+
+    res.status(200).json({
+      status: "success",
+      code: 200,
+      message: "Verification email sent",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   signup,
   login,
@@ -247,4 +339,6 @@ module.exports = {
   getCurrent,
   setSubscription,
   setAvatar,
+  verifyUser,
+  resendVerificationEmail,
 };
