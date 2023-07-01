@@ -23,6 +23,7 @@ const sendVerificationEmail = async (email, verificationToken) => {
     to: email,
     subject: "Verify your email address",
     text: `To verify your email go to: ${baseUrl}/api/users/verify/${verificationToken}`,
+    html: `<p>To verify your email go to: <a clicktracking=off href="${baseUrl}/api/users/verify/${verificationToken}">${baseUrl}/api/users/verify/${verificationToken}</a></p>`,
   };
 
   transporter.sendMail(emailOptions);
